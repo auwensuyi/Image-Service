@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from service import S3Service
+from service.s3_service import S3Service
 
 s3_service = S3Service()
 app = Flask(__name__)
@@ -24,7 +24,8 @@ def upload():
         url = s3_service.upload_file(file)
         return jsonify({
             "message": "File uploaded successfully",
-            "url": url
+            "url": url,
+            "statusCode": 200
         }), 200
 
     except Exception as e:
