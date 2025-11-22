@@ -1,0 +1,72 @@
+name: Push To Container Registry
+
+on:
+  push:
+    tags:
+      - "*"
+  workflow_dispatch:
+    inputs:
+      custom_tag:
+        description: Enter Custom Tag
+        required: false
+        type: string
+
+jobs:
+  push_to_registry:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        users: [auwensuyi, onehpee, ACompleteNoobSmoke]
+
+    steps:
+      - name: Get Tag
+        id: get_tag
+        env:
+          EVENT: ${{ github.event_name }}
+          INPUT: ${{ inputs.custom_tag }}
+        run: |
+          if [[ "$EVENT" == "workflow_dispatch" ]]; then
+            if [ -z "$INPUT" ]; then
+              echo "TAG=test" >> $GITHUB_OUTPUT
+            else
+              echo "TAG=$INPUT" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "TAG=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Determine Docker Credentials
+        id: docker_creds
+        env:
+          USER: ${{ matrix.users }}
+        run: |
+          if [[ "$USER" == "auwensuyi" ]]; then
+            echo "DOCKER_USERNAME=${{ secrets.DOCKER_DIOS_USERNAME }}" >> $GITHUB_OUTPUT
+            echo "DOCKER_PASSWORD=${{ secrets.DOCKER_DIOS_PASSWORD }}" >> $GITHUB_OUTPUT
+          elif [[ "$USER" == "onehpee" ]]; then
+            echo "DOCKER_USERNAME=${{ secrets.DOCKER_1HPEE_USERNAME }}" >> $GITHUB_OUTPUT
+            echo "DOCKER_PASSWORD=${{ secrets.DOCKER_1HPEE_PASSWORD }}" >> $GITHUB_OUTPUT
+          else
+            echo "DOCKER_USERNAME=${{ secrets.DOCKER_ACOMPLETENOOBSMOKE_USERNAME }}" >> $GITHUB_OUTPUT
+            echo "DOCKER_PASSWORD=${{ secrets.DOCKER_ACOMPLETENOOBSMOKE_PASSWORD }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Checkout Code
+        uses: actions/checkout@v5
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Docker Login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ steps.docker_creds.outputs.DOCKER_USERNAME }}
+          password: ${{ steps.docker_creds.outputs.DOCKER_PASSWORD }}
+
+      - name: Build & Push Image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: ${{ steps.docker_creds.outputs.DOCKER_USERNAME }}/image-service:${{ steps.get_tag.outputs.TAG }}
