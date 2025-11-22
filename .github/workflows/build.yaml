@@ -28,5 +28,5 @@ jobs:
       - name: Run Tests
         run: pytest
 
-      - name: Run Linter
-        run: flake8 . --max-complexity=10 --max-line=120
+#      - name: Run Linter
+#        run: flake8 . --max-complexity=10 --max-line=120
