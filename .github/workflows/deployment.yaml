@@ -20,6 +20,7 @@ jobs:
 
       - name: Connect To Server
         run: |
+          cd ~/.ssh
           ssh -i id_rsa ${{secrets.AWS_HOST}}@${{secrets.AWS_IP}} -t "
             sudo docker --version &&
             sudo docker ps -a &&
