@@ -1,0 +1,29 @@
+name: Deployment Pipeline
+
+run-name: Deployment Pipeline
+
+on:
+  workflow_dispatch:
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Configure Files
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Connect To Server
+        run: |
+          ssh -i id_rsa ${{secrets.AWS_HOST}}@${{secrets.AWS_HOST_IP}} -t "
+            sudo docker --version &&
+            sudo docker ps -a &&
+            sudo docker rm -f test &&
+            sudo docker run -d -p 80:5000 --name test -e S3_BUCKET_NAME=${{secrets.S3_BUCKET_NAME}} -e AWS_REGION=${{secrets.AWS_REGION}} -e AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID}} -e AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}} ${{secrets.DOCKER_ACOMPLETENOOBSMOKE_USERNAME}}/image-service:test &&
+            sudo docker ps -a
+          "
