@@ -4,7 +4,7 @@ from service.s3_service import S3Service
 s3_service = S3Service()
 app = Flask(__name__)
 
-items = ["Ajinboye", "Adedayo", "Uwensuyi"]
+items = ["Ajinboye", "Adedayo", "Uwensuyi", "Mason", "Osaretin"]
 
 @app.route("/")
 def index():
@@ -14,8 +14,6 @@ def index():
 def upload():
     if "file" not in request.files:
         return jsonify({"error": "No file part"}), 400
-
-    # print(request.file)
 
     try:
         payload = s3_service.upload_file(request.files["file"])
