@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY app.py /app/
 COPY service /app/service
+COPY validations /app/validations
 COPY requirements.txt /app/
 
 RUN pip install --no-cache-dir -r requirements.txt
