@@ -85,6 +85,7 @@ jobs:
       known_hosts: ${{ secrets.KNOWN_HOSTS }}
       host_name: ${{ secrets.AWS_HOST }}
       host_ip: ${{ secrets.AWS_IP }}
+      docker_username: ${{ secrets.DOCKER_ACOMPLETENOOBSMOKE_USERNAME }}
     with:
       tag_name: ${{ needs.push_to_registry.outputs.TAG-NAME }}
-      image_name: ${{ secrets.DOCKER_ACOMPLETENOOBSMOKE_USERNAME }}/image-service
+      image_name: image-service
