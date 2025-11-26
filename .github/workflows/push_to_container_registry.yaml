@@ -81,7 +81,7 @@ jobs:
       known_hosts: ${{ secrets.KNOWN_HOSTS }}
       host_name: ${{secrets.AWS_HOST}}
       host_ip: ${{secrets.AWS_IP}}
-      tag_name: ${{needs.outputs.push_to_registry.TAG_NAME}}
+      tag_name: ${{needs.outputs.push_to_registry.TAG-NAME}}
       s3_bucket: ${{secrets.S3_BUCKET_NAME}}
       aws_region: ${{secrets.AWS_REGION}}
       aws_access_key_id: ${{secrets.AWS_ACCESS_KEY_ID}}
