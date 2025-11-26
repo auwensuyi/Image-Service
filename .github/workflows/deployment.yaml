@@ -64,7 +64,7 @@ jobs:
                 -e AWS_REGION=${{ secrets.aws_region }} \
                 -e AWS_ACCESS_KEY_ID=${{ secrets.aws_access_key_id }} \
                 -e AWS_SECRET_ACCESS_KEY=${{ secrets.aws_secret_access_key }} \
-                ${{ secrets.image_name }}:${{ secrets.tag_name }}
+                ${{ inputs.image_name }}:${{ inputs.tag_name }}
       
               echo 'Final container state:'
               sudo docker ps -a
