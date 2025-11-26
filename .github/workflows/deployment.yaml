@@ -21,6 +21,8 @@ on:
         required: true
       aws_secret_access_key:
         required: true
+      docker_username:
+        required: true
     inputs:
       tag_name:
         required: true
@@ -64,7 +66,7 @@ jobs:
                 -e AWS_REGION=${{ secrets.aws_region }} \
                 -e AWS_ACCESS_KEY_ID=${{ secrets.aws_access_key_id }} \
                 -e AWS_SECRET_ACCESS_KEY=${{ secrets.aws_secret_access_key }} \
-                ${{ inputs.image_name }}:${{ inputs.tag_name }}
+                ${{ secrets.docker_username }}/${{ inputs.image_name }}:${{ inputs.tag_name }}
       
               echo 'Final container state:'
               sudo docker ps -a
