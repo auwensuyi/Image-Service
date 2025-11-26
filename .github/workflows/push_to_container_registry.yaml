@@ -76,14 +76,15 @@ jobs:
   deploy_to_server:
     needs: push_to_registry
     uses: ./.github/workflows/deployment.yaml
-    with:
-      private_key: ${{ secrets.PRIVATE_KEY }}
-      known_hosts: ${{ secrets.KNOWN_HOSTS }}
-      host_name: ${{ secrets.AWS_HOST }}
-      host_ip: ${{ secrets.AWS_IP }}
-      tag_name: ${{ needs.push_to_registry.outputs.TAG-NAME }}
+    secrets:
       s3_bucket: ${{ secrets.S3_BUCKET_NAME }}
       aws_region: ${{ secrets.AWS_REGION }}
       aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      private_key: ${{ secrets.PRIVATE_KEY }}
+      known_hosts: ${{ secrets.KNOWN_HOSTS }}
+      host_name: ${{ secrets.AWS_HOST }}
+      host_ip: ${{ secrets.AWS_IP }}
+    with:
+      tag_name: ${{ needs.push_to_registry.outputs.TAG-NAME }}
       image_name: ${{ secrets.DOCKER_ACOMPLETENOOBSMOKE_USERNAME }}/image-service

@@ -4,37 +4,30 @@ run-name: Deployment Pipeline
 
 on:
   workflow_call:
-    inputs:
+    secrets:
       private_key:
-        type: string
         required: true
       known_hosts:
-        type: string
         required: true
       host_name:
-        type: string
         required: true
       host_ip:
-        type: string
-        required: true
-      tag_name:
-        type: string
         required: true
       s3_bucket:
-        type: string
         required: true
       aws_region:
-        type: string
         required: true
       aws_access_key_id:
-        type: string
         required: true
       aws_secret_access_key:
-        type: string
         required: true
+    inputs:
+      tag_name:
+        required: true
+        type: string
       image_name:
-        type: string
         required: true
+        type: string
 
 jobs:
   deploy:
@@ -44,15 +37,15 @@ jobs:
       - name: Configure SSH Files
         run: |
           mkdir -p ~/.ssh
-          echo "${{ inputs.private_key }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.private_key }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          echo "${{ inputs.known_hosts }}" > ~/.ssh/known_hosts
+          echo "${{ secrets.known_hosts }}" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
 
       - name: SSH Into EC2 & Deploy Container
         run: |
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
-            ${{ inputs.host_name }}@${{ inputs.host_ip }} -T "
+            ${{ secrets.host_name }}@${{ secrets.host_ip }} -T "
               echo 'Connected to EC2'
               sudo docker --version
               sudo docker ps -a
@@ -61,16 +54,16 @@ jobs:
               sudo docker rm -f image-service || true
       
               echo 'Pulling latest image...'
-              sudo docker pull ${{ inputs.image_name }}:${{ inputs.tag_name }}
+              sudo docker pull ${{ secrets.image_name }}:${{ secrets.tag_name }}
       
               echo 'Starting new container...'
               sudo docker run -d \
                 -p 80:5000 \
                 --name image-service \
-                -e S3_BUCKET_NAME=${{ inputs.s3_bucket }} \
-                -e AWS_REGION=${{ inputs.aws_region }} \
-                -e AWS_ACCESS_KEY_ID=${{ inputs.aws_access_key_id }} \
-                -e AWS_SECRET_ACCESS_KEY=${{ inputs.aws_secret_access_key }} \
+                -e S3_BUCKET_NAME=${{ secrets.s3_bucket }} \
+                -e AWS_REGION=${{ secrets.aws_region }} \
+                -e AWS_ACCESS_KEY_ID=${{ secrets.aws_access_key_id }} \
+                -e AWS_SECRET_ACCESS_KEY=${{ secrets.aws_secret_access_key }} \
                 ${{ inputs.image_name }}:${{ inputs.tag_name }}
       
               echo 'Final container state:'
