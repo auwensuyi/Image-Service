@@ -1,6 +1,7 @@
 import boto3
 import os
 from botocore.exceptions import NoCredentialsError
+from validations.file_validations import FileValidations
 
 
 class S3Service:
@@ -17,14 +18,42 @@ class S3Service:
 
     def upload_file(self, file):
         """Upload a file-like object to S3 and return the URL"""
-        try:
-            filename = file.filename
-            self.client.upload_fileobj(file, self.bucket, filename)
 
-            return f"https://{self.bucket}.s3.{self.region}.amazonaws.com/{filename}"
+        try:
+            if file is None:
+                raise ValueError("No file provided")
+
+            if file.filename == "":
+                raise ValueError("File has no name")
+
+            filename = file.filename
+
+            # Extension + MIME validation
+            if not FileValidations.validate(file):
+                raise ValueError("Invalid image type")
+
+            # Upload to S3
+            self.client.upload_fileobj(file, self.bucket, filename)
+            presigned_url = self.get_presigned_url(filename)
+            return {
+                "url": f"https://{self.bucket}.s3.{self.region}.amazonaws.com/{filename}",
+                "presigned_url": presigned_url
+            }
+
 
         except NoCredentialsError:
-            raise Exception("AWS credentials missing or invalid")
+            raise RuntimeError("AWS credentials missing or invalid")
 
         except Exception as e:
-            raise Exception(f"S3 upload failed: {e}")
+            raise RuntimeError(f"S3 upload failed: {e}")
+
+    def get_presigned_url(self, filename):
+        """Generate presigned url for given filename."""
+        try:
+            return self.client.generate_presigned_url(
+                ClientMethod="get_object",
+                Params={"Bucket": self.bucket, "Key": filename},
+                ExpiresIn=3600,
+            )
+        except Exception as e:
+            raise RuntimeError(f"S3 presigned url failed: {e}")

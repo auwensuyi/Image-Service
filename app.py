@@ -15,16 +15,14 @@ def upload():
     if "file" not in request.files:
         return jsonify({"error": "No file part"}), 400
 
-    file = request.files["file"]
-
-    if file.filename == "":
-        return jsonify({"error": "No filename"}), 400
+    # print(request.file)
 
     try:
-        url = s3_service.upload_file(file)
+        payload = s3_service.upload_file(request.files["file"])
         return jsonify({
             "message": "File uploaded successfully",
-            "url": url,
+            "url": payload["url"],
+            "presigned_url": payload["presigned_url"],
             "statusCode": 200
         }), 200
 
