@@ -28,13 +28,11 @@ def upload():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/delete-file', methods=['DELETE'])
-def delete():
-    filename = request.files
+@app.route('/delete-file/<filename>', methods=['DELETE'])
+def delete(filename):
     if not filename:
         return jsonify({"error": "filename is required"}), 400
-
-    success = S3Service.delete_file(filename)
+    success = s3_service.delete_file(filename)
 
     if success:
         return jsonify({"message": "File deleted successfully"}), 200

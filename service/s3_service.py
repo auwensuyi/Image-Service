@@ -8,7 +8,6 @@ class S3Service:
     def __init__(self):
         self.bucket = os.getenv("S3_BUCKET_NAME")
         self.region = os.getenv("AWS_REGION")
-        self.filename = 'upload/rock_lee.jpg'
 
         self.client = boto3.client(
             "s3",
@@ -58,7 +57,9 @@ class S3Service:
         Deletes a file from an S3 bucket.
         """
         try:
-            self.client.delete_object(Bucket=self.bucket, Key=self.filename)
+            print("Delete_File")
+            print(filename)
+            self.client.delete_object(Bucket=self.bucket, Key=filename)
             print(f"File {filename} deleted successfully.")
             return True
         except ValueError as e:
