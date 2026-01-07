@@ -27,6 +27,24 @@ def upload():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+@app.route('/delete-file', methods=['DELETE'])
+def delete():
+    filename = request.files
+    if not filename:
+        return jsonify({"error": "filename is required"}), 400
+
+    success = S3Service.delete_file(filename)
+
+    if success:
+        return jsonify({"message": "File deleted successfully"}), 200
+    else:
+        return jsonify({"error": "Failed to delete file"}), 500
+    
+
+
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, threaded=True, debug=True)
 
