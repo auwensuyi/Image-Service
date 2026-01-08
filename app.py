@@ -28,7 +28,7 @@ def upload():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/delete-file/<filename>', methods=['DELETE'])
+@app.route('/delete/<filename>', methods=['DELETE'])
 def delete(filename):
     if not filename:
         return jsonify({"error": "filename is required"}), 400
