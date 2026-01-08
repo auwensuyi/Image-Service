@@ -22,10 +22,14 @@ class S3Service:
         try:
             if file is None:
                 raise ValueError("No file provided")
-
             if file.filename == "":
                 raise ValueError("File has no name")
-
+            if self.bucket is None:
+                raise ValueError("Error: Bucket name is None")
+            if self.client is None:
+                raise ValueError("Error: client is None")
+            if self.region is None:
+                raise ValueError("Error: region is None")
             filename = file.filename
 
             # Extension + MIME validation
@@ -46,6 +50,24 @@ class S3Service:
 
         except Exception as e:
             raise RuntimeError(f"S3 upload failed: {e}")
+
+
+    def delete_file(self,filename):
+        """
+        Deletes a file from an S3 bucket.
+        """
+        try:
+            print("Delete_File")
+            print(filename)
+            self.client.delete_object(Bucket=self.bucket, Key=filename)
+            print(f"File {filename} deleted successfully.")
+            return True
+        except ValueError as e:
+            raise ValueError(f"Error deleting file: {e.response['Error']['Message']}")
+        except Exception as e:
+            raise ValueError(f"An unexpected error occurred: {e}")
+
+
 
     def get_presigned_url(self, filename):
         """Generate presigned url for given filename."""
