@@ -57,8 +57,6 @@ class S3Service:
         Deletes a file from an S3 bucket.
         """
         try:
-            print("Delete_File")
-            print(filename)
             self.client.delete_object(Bucket=self.bucket, Key=filename)
             print(f"File {filename} deleted successfully.")
             return True
