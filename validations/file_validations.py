@@ -1,3 +1,7 @@
+import re
+from unicodedata import name
+
+
 ALLOWED_EXTS = {"jpg", "jpeg", "png", "webp", "gif", "bmp", "tiff", "ico"}
 ALLOWED_MIME_TYPES = {
     "image/jpeg",
@@ -30,3 +34,20 @@ class FileValidations:
             FileValidations.is_valid_extension(filename)
             and FileValidations.is_valid_mime(mime_type)
         )
+
+    def uniform_name(filename):
+        name = filename.rsplit(".", 1)[0]
+        ext = filename.rsplit(".", 1)[-1]
+        #Convert to lowercase
+        name = name.lower()
+
+        #Replace spaces with underscore
+        name = name.replace(" ", "_")
+
+        #Remove anything not alphanumeric, underscore, and dash
+        name = re.sub(r'[^a-z0-9_-]', '', name)
+
+        #Lowercase extension
+        ext = ext.lower()
+
+        return f"{name}.{ext}"

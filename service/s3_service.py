@@ -35,6 +35,8 @@ class S3Service:
             # Extension + MIME validation
             if not FileValidations.validate(file):
                 raise ValueError("Invalid image type")
+            
+            filename = FileValidations.uniform_name(filename)
 
             # Upload to S3
             self.client.upload_fileobj(file, self.bucket, filename)
