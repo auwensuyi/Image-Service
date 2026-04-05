@@ -1,1 +1,4 @@
 *env*
+*tfstate*
+*.terraform*
+*__pycache__*
